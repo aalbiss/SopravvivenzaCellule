@@ -8,9 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 public class Pannello extends JFrame implements ActionListener, KeyListener {
     
     JButton[] bottoni;
@@ -18,6 +15,7 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
     int cellularStage1[][];
     int cellularStage2[][];
     Timer timer;
+    Timer timer2;
     int viciniAttivi;
     Border defaultBorder;
     
@@ -26,28 +24,27 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
         setSize(900, 900);
         setLayout(new GridLayout(50, 50));
         timer = new Timer(1000, this);
-        
+        timer2 = new Timer(1000, this);
         
         cellularStage1 = new int[50][50];
-//        cellularStage2 = new int[50][50];
+        cellularStage2 = new int[50][50];
         
         bottoni = new JButton[nBottoni];
         for (int i = 0; i < nBottoni; i++) {
             bottoni[i] = new JButton();
             add(bottoni[i]);
             bottoni[i].setBackground(Color.WHITE);
-            
             bottoni[i].addActionListener(this);
         }
         
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
                 cellularStage1[i][j] = 0;
+                cellularStage2[i][j] = 0;
             }
         }
         
         defaultBorder = bottoni[0].getBorder();
-        cellularStage2 = cellularStage1;
         
         setResizable(false);
         setLocationRelativeTo(null);
@@ -58,15 +55,13 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         
-        
-        
         for (int i = 0; i < 50*50; i++) {
             if(e.getSource() == bottoni[i]){
                 System.out.println("Bottone premuto = " + i);
                 bottoni[i].setBorder(null);
                 bottoni[i].setBackground(Color.BLACK);
-                int x = (int) i/50;
-                int y = (i%50);
+                int x = i /50;
+                int y = i%50;
                 cellularStage1[x][y] = 1;
                 System.out.println(x);
                 System.out.println(y);
@@ -87,7 +82,21 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                         bottoni[50*i+j].setBackground(Color.BLUE);
                     }
                     bottoni[50*i+j].setBorder(defaultBorder);
+                    
                 }
+            }
+            timer.stop();
+            timer2.start();
+        }
+        
+        if(e.getSource() == timer2) {
+            for (int i = 0; i < nBottoni; i++) {
+                if(bottoni[i].getBackground() == Color.RED){
+                    bottoni[i].setBackground(Color.WHITE);
+                } else if (bottoni[i].getBackground() == Color.BLUE) {
+                    bottoni[i].setBackground(Color.BLACK);
+                }
+                
             }
         }
         
@@ -99,6 +108,12 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
             stampa();
         }
         
+        if(e.getSource() == bottoni[2497]){
+            for (int i = 0; i < nBottoni; i++) {
+                bottoni[i].setBackground(Color.WHITE);
+                bottoni[i].setBorder(defaultBorder);
+            }
+        }
     }
     
     public void stampa(){
@@ -136,15 +151,16 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
         int yVicino;
         for (int i = 1; i <49; i++) {
             for (int j = 1; j < 49; j++) {
-
-
+                
+                
                 yVicino = i-1;
                 xVicino = j-1;
                 viciniAttivi = 0;
-
+                
                 for (int k = 0; k < 9; k++) {
                     //CONTARE VICINI ATTIVI
-                    if ((cellularStage1[yVicino][xVicino] == 1) && (cellularStage1[yVicino][xVicino] != cellularStage1[i][j])){
+//                    System.out.println(cellularStage1[yVicino][xVicino]);
+                    if ((cellularStage1[yVicino][xVicino] == 1) && (bottoni[50*yVicino+xVicino] != bottoni[50*i+j])){
                         viciniAttivi++;
                     }
                     if(k == 2 || k == 5){
@@ -154,41 +170,22 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                         xVicino++;
                     }
                 }
-                //-1 --> muore
-                //0  --> disattivato
-                //1  --> attivato
-                //2  --> nasce
                 if(cellularStage1[i][j] == 0 && viciniAttivi == 3){
                     cellularStage2[i][j] = 2;
-                } else if (cellularStage1[i][j] == 1 && (viciniAttivi == 2 || viciniAttivi == 3)) {
+                } else if ((cellularStage1[i][j] == 1 && viciniAttivi == 2) || (cellularStage1[i][j] == 1 && viciniAttivi == 3)) {
                     cellularStage2[i][j] = 1;
-                } else if (cellularStage1[i][j] == 1 && (viciniAttivi != 2 || viciniAttivi != 3)) {
+                } else if ((cellularStage1[i][j] == 1 && viciniAttivi !=  2) || (cellularStage1[i][j] == 1 && viciniAttivi != 3)) {
                     cellularStage2[i][j] = -1;
                 }
+
 //                stampa();
             }
+            
         }
-        
-        
-//
-//        for(int i = 0; i < 50; i++) {
-//            for(int j = 0; j < 50; j++) {
-//                viciniAttivi = 0;
-//                for(int x = max(i-1,0); x < min(50,i+1); x++) {
-//                    for(int y = max(i-1,0); y < min(50,i+1); y++) {
-//                        if(cellularStage1[x][y] == 1)
-//                            viciniAttivi++;
-//                    }
-//                }
-//                if(cellularStage1[i][j] == 0 && viciniAttivi == 3){
-//                    cellularStage2[i][j] = 2;
-//                } else if (cellularStage1[i][j] == 1 && (viciniAttivi == 2 || viciniAttivi == 3)) {
-//                    cellularStage2[i][j] = 1;
-//                } else if (cellularStage1[i][j] == 1 && (viciniAttivi != 2 || viciniAttivi != 3)) {
-//                    cellularStage2[i][j] = -1;
-//                }
-//            }
-//        }
-        
+        //-1 --> muore
+        //0  --> disattivato
+        //1  --> attivato
+        //2  --> nasce
+
     }
 }

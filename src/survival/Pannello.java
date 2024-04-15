@@ -82,7 +82,8 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                         bottoni[50*i+j].setBackground(Color.BLUE);
                     }
                     bottoni[50*i+j].setBorder(defaultBorder);
-                    
+                    cellularStage2[i][j] = 0;
+                   
                 }
             }
             timer.stop();
@@ -97,7 +98,14 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                     bottoni[i].setBackground(Color.BLACK);
                 }
                 
+                if(bottoni[i].getBackground() == Color.BLACK){
+                    cellularStage1[i/50][i%50] = 1;
+                }else {
+                    cellularStage1[i/50][i%50] = 0;
+                }
             }
+            timer.start();
+            timer2.stop();
         }
         
         if(e.getSource() == bottoni[2499]){
@@ -105,14 +113,19 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
         }
         
         if(e.getSource() == bottoni[2498]){
-            stampa();
+            timer.stop();
         }
         
         if(e.getSource() == bottoni[2497]){
-            for (int i = 0; i < nBottoni; i++) {
-                bottoni[i].setBackground(Color.WHITE);
-                bottoni[i].setBorder(defaultBorder);
-            }
+            timer2.start();
+        }
+        
+        if(e.getSource() == bottoni[2496]){
+            timer2.stop();
+        }
+        
+        if(e.getSource() == bottoni[2494]){
+            stampa();
         }
     }
     

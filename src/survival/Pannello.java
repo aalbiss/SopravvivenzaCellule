@@ -12,8 +12,8 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
     
     JButton[] bottoni;
     final int nBottoni = 50*50;
-    int cellularStage1[][];
-    int cellularStage2[][];
+    int[][] cellularStage1;
+    int[][] cellularStage2;
     Timer timer;
     Timer timer2;
     int viciniAttivi;
@@ -23,8 +23,8 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
         super("Sopravvivenza Cellulare");
         setSize(900, 900);
         setLayout(new GridLayout(50, 50));
-        timer = new Timer(1000, this);
-        timer2 = new Timer(1000, this);
+        timer = new Timer(50, this);
+        timer2 = new Timer(50, this);
         
         cellularStage1 = new int[50][50];
         cellularStage2 = new int[50][50];
@@ -44,6 +44,15 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
             }
         }
         
+        for (int i = 0; i < 200; i++) {
+            int x = (int) (Math.random() * (35 - 10 + 1)) + 10;
+            int y = (int) (Math.random() * (35 - 10 + 1)) + 10;
+            
+            bottoni[y*50+x].setBackground(Color.BLACK);
+            cellularStage1[x][y] = 1;
+            
+        }
+        
         defaultBorder = bottoni[0].getBorder();
         
         setResizable(false);
@@ -55,12 +64,13 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         
+        
         for (int i = 0; i < 50*50; i++) {
             if(e.getSource() == bottoni[i]){
                 System.out.println("Bottone premuto = " + i);
                 bottoni[i].setBorder(null);
                 bottoni[i].setBackground(Color.BLACK);
-                int x = i /50;
+                int x = i/50;
                 int y = i%50;
                 cellularStage1[x][y] = 1;
                 System.out.println(x);

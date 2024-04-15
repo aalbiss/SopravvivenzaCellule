@@ -82,7 +82,8 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                         bottoni[50*i+j].setBackground(Color.BLUE);
                     }
                     bottoni[50*i+j].setBorder(defaultBorder);
-                    
+                    cellularStage2[i][j] = 0;
+                   
                 }
             }
             timer.stop();
@@ -97,34 +98,46 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                     bottoni[i].setBackground(Color.BLACK);
                 }
                 
+                if(bottoni[i].getBackground() == Color.BLACK){
+                    cellularStage1[i/50][i%50] = 1;
+                }else {
+                    cellularStage1[i/50][i%50] = 0;
+                }
             }
+            timer.start();
+            timer2.stop();
         }
         
         if(e.getSource() == bottoni[2499]){
             timer.start();
         }
         
-        if(e.getSource() == bottoni[2498]){
-            stampa();
-        }
-        
-        if(e.getSource() == bottoni[2497]){
-            for (int i = 0; i < nBottoni; i++) {
-                bottoni[i].setBackground(Color.WHITE);
-                bottoni[i].setBorder(defaultBorder);
-            }
-        }
+//        if(e.getSource() == bottoni[2498]){
+//            timer.stop();
+//        }
+//
+//        if(e.getSource() == bottoni[2497]){
+//            timer2.start();
+//        }
+//
+//        if(e.getSource() == bottoni[2496]){
+//            timer2.stop();
+//        }
+//
+//        if(e.getSource() == bottoni[2494]){
+//            stampa();
+//        }
     }
     
-    public void stampa(){
-        for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 50; j++) {
-                System.out.print(cellularStage1[i][j]+ " ");
-            }
-            System.out.println();
-        }
-        System.out.println("----------------------------------------");
-    }
+//    public void stampa(){
+//        for (int i = 0; i < 50; i++) {
+//            for (int j = 0; j < 50; j++) {
+//                System.out.print(cellularStage1[i][j]+ " ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println("----------------------------------------");
+//    }
     
     @Override
     public void keyTyped(KeyEvent e) {
@@ -152,14 +165,12 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
         for (int i = 1; i <49; i++) {
             for (int j = 1; j < 49; j++) {
                 
-                
                 yVicino = i-1;
                 xVicino = j-1;
                 viciniAttivi = 0;
                 
                 for (int k = 0; k < 9; k++) {
                     //CONTARE VICINI ATTIVI
-//                    System.out.println(cellularStage1[yVicino][xVicino]);
                     if ((cellularStage1[yVicino][xVicino] == 1) && (bottoni[50*yVicino+xVicino] != bottoni[50*i+j])){
                         viciniAttivi++;
                     }
@@ -170,6 +181,10 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                         xVicino++;
                     }
                 }
+                //-1 --> dies
+                //0  --> deactivated
+                //1  --> activated
+                //2  --> born
                 if(cellularStage1[i][j] == 0 && viciniAttivi == 3){
                     cellularStage2[i][j] = 2;
                 } else if ((cellularStage1[i][j] == 1 && viciniAttivi == 2) || (cellularStage1[i][j] == 1 && viciniAttivi == 3)) {
@@ -177,15 +192,9 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                 } else if ((cellularStage1[i][j] == 1 && viciniAttivi !=  2) || (cellularStage1[i][j] == 1 && viciniAttivi != 3)) {
                     cellularStage2[i][j] = -1;
                 }
-
-//                stampa();
+                
             }
             
         }
-        //-1 --> muore
-        //0  --> disattivato
-        //1  --> attivato
-        //2  --> nasce
-
     }
 }

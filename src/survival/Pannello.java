@@ -83,7 +83,6 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                     }
                     bottoni[50*i+j].setBorder(defaultBorder);
                     cellularStage2[i][j] = 0;
-                   
                 }
             }
             timer.stop();

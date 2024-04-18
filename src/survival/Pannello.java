@@ -5,26 +5,83 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
-public class Pannello extends JFrame implements ActionListener, KeyListener {
+public class Pannello extends JFrame implements ActionListener {
     
     final int nBottoni = 50 * 50;
     JButton[] bottoni;
+    JButton start;
+    JButton stop;
+    JButton reset;
+    JButton close;
+    JTextArea leggenda;
     int[][] cellularStage1;
     int[][] cellularStage2;
     Timer timer;
     Timer timer2;
     int viciniAttivi;
     Border defaultBorder;
+    JPanel legendAndButtons;
+    JPanel game;
+    Font font = new Font("Arial", Font.PLAIN, 17);
     
     public Pannello() {
+        
         super("Sopravvivenza Cellulare");
-        setSize(900, 900);
-        setLayout(new GridLayout(50, 50));
+        setSize(1170, 940);
+        setLayout(null);
+//        setLayout(new GridLayout(1, 2));
+//        setLayout(new BorderLayout());
+        
         timer = new Timer(50, this);
         timer2 = new Timer(50, this);
+        
+        leggenda = new JTextArea("Cellular stage white: disabled \n"
+                            + "Cellular stage black: enabled \n"
+                            + "Cellular stage red: dies \n"
+                            + "Cellular stage blue: born");
+        leggenda.setEditable(false);
+        
+        start = new JButton("Start");
+        stop = new JButton("Stop");
+        reset = new JButton("Reset");
+        close = new JButton("Close");
+        
+        start.addActionListener(this);
+        stop.addActionListener(this);
+        reset.addActionListener(this);
+        close.addActionListener(this);
+        
+        legendAndButtons = new JPanel();
+        legendAndButtons.setLayout(null);
+        legendAndButtons.setBounds(0,0, 250, 940);
+        
+        leggenda.setBounds(0, 300, 250, 100);
+        leggenda.setOpaque(false);
+        leggenda.setFont(font);
+        legendAndButtons.add(leggenda);
+        
+        start.setBounds(75, 10, 100, 30);
+        legendAndButtons.add(start);
+        
+        stop.setBounds(75, 70, 100, 30);
+        legendAndButtons.add(stop);
+        
+        reset.setBounds(75, 130, 100, 30);
+        legendAndButtons.add(reset);
+        
+        close.setBounds(75, 190, 100, 30);
+        legendAndButtons.add(close);
+        
+        
+        game = new JPanel();
+        game.setLayout(new GridLayout(50,50));
+        game.setBounds(250, 0, 900, 900);
+        
+        
+        add(legendAndButtons);
+        add(game);
+        
         
         cellularStage1 = new int[50][50];
         cellularStage2 = new int[50][50];
@@ -32,11 +89,14 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
         bottoni = new JButton[nBottoni];
         for (int i = 0; i < nBottoni; i++) {
             bottoni[i] = new JButton();
-            add(bottoni[i]);
+            game.add(bottoni[i]);
             bottoni[i].setBackground(Color.WHITE);
             bottoni[i].addActionListener(this);
         }
         
+        defaultBorder = bottoni[0].getBorder();
+        
+        //Create matrices where state is stored
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
                 cellularStage1[i][j] = 0;
@@ -44,16 +104,8 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
             }
         }
         
-        for (int i = 0; i < 200; i++) {
-            int x = (int) (Math.random() * (35 - 10 + 1)) + 10;
-            int y = (int) (Math.random() * (35 - 10 + 1)) + 10;
-            
-            bottoni[y * 50 + x].setBackground(Color.BLACK);
-            cellularStage1[x][y] = 1;
-            
-        }
         
-        defaultBorder = bottoni[0].getBorder();
+        
         
         setResizable(false);
         setLocationRelativeTo(null);
@@ -64,20 +116,20 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         
-        
+        //Set black color when pressed the button
         for (int i = 0; i < 50 * 50; i++) {
             if (e.getSource() == bottoni[i]) {
-                System.out.println("Bottone premuto = " + i);
                 bottoni[i].setBorder(null);
                 bottoni[i].setBackground(Color.BLACK);
                 int x = i / 50;
                 int y = i % 50;
                 cellularStage1[x][y] = 1;
-                System.out.println(x);
-                System.out.println(y);
+//                System.out.println(x);
+//                System.out.println(y);
             }
         }
         
+        //Set colors of the cells for state 2
         if (e.getSource() == timer) {
             controlloVicini();
             for (int i = 0; i < 50; i++) {
@@ -99,6 +151,7 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
             timer2.start();
         }
         
+        //Set colors of the cells for state 1
         if (e.getSource() == timer2) {
             for (int i = 0; i < nBottoni; i++) {
                 if (bottoni[i].getBackground() == Color.RED) {
@@ -117,55 +170,32 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
             timer2.stop();
         }
         
-        if (e.getSource() == bottoni[2499]) {
+        //Start the timer
+        if (e.getSource() == start) {
             timer.start();
         }
-
-//        if(e.getSource() == bottoni[2498]){
-//            timer.stop();
-//        }
-//
-//        if(e.getSource() == bottoni[2497]){
-//            timer2.start();
-//        }
-//
-//        if(e.getSource() == bottoni[2496]){
-//            timer2.stop();
-//        }
-//
-//        if(e.getSource() == bottoni[2494]){
-//            stampa();
-//        }
-    }
-
-//    public void stampa(){
-//        for (int i = 0; i < 50; i++) {
-//            for (int j = 0; j < 50; j++) {
-//                System.out.print(cellularStage1[i][j]+ " ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("----------------------------------------");
-//    }
-    
-    @Override
-    public void keyTyped(KeyEvent e) {
-    
-    }
-    
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            if (!timer.isRunning()) {
-                timer.start();
-                System.out.println("PARTI");
-            }
+        
+        if (e.getSource() == stop) {
+            timer.stop();
+            timer2.stop();
         }
-    }
-    
-    @Override
-    public void keyReleased(KeyEvent e) {
-    
+        
+        if (e.getSource() == reset) {
+            for (int i = 0; i < 50; i++) {
+                for (int j = 0; j < 50; j++) {
+                    cellularStage1[i][j] = 0;
+                    cellularStage2[i][j] = 0;
+                    bottoni[i*50+j].setBackground(Color.WHITE);
+                }
+            }
+            timer.stop();
+            timer2.stop();
+        }
+        
+        if (e.getSource() == close) {
+            System.exit(0);
+        }
+        
     }
     
     public void controlloVicini() {
@@ -179,7 +209,7 @@ public class Pannello extends JFrame implements ActionListener, KeyListener {
                 viciniAttivi = 0;
                 
                 for (int k = 0; k < 9; k++) {
-                    //CONTARE VICINI ATTIVI
+                    //Count if nearest cells are active or not
                     if ((cellularStage1[yVicino][xVicino] == 1) && (bottoni[50 * yVicino + xVicino] != bottoni[50 * i + j])) {
                         viciniAttivi++;
                     }

@@ -14,7 +14,7 @@ public class Pannello extends JFrame implements ActionListener {
     JButton stop;
     JButton reset;
     JButton close;
-    JTextArea leggenda;
+    JLabel leggenda;
     int[][] cellularStage1;
     int[][] cellularStage2;
     Timer timer;
@@ -23,24 +23,30 @@ public class Pannello extends JFrame implements ActionListener {
     Border defaultBorder;
     JPanel legendAndButtons;
     JPanel game;
-    Font font = new Font("Arial", Font.PLAIN, 17);
+    JLabel title;
+    Font fontLeggenda = new Font("Arial", Font.PLAIN, 17);
+    Font fontTitolo = new Font("Arial", Font.BOLD, 22);
     
     public Pannello() {
         
         super("Sopravvivenza Cellulare");
-        setSize(1170, 940);
+        setSize(1300, 940);
         setLayout(null);
+        Image icon = Toolkit.getDefaultToolkit().getImage("image/Foto1.png");
+        icon.getScaledInstance(30,30,Image.SCALE_FAST);
+        setIconImage(icon);
 //        setLayout(new GridLayout(1, 2));
 //        setLayout(new BorderLayout());
         
-        timer = new Timer(50, this);
-        timer2 = new Timer(50, this);
+        timer = new Timer(400, this);
+        timer2 = new Timer(400, this);
         
-        leggenda = new JTextArea("Cellular stage white: disabled \n"
-                            + "Cellular stage black: enabled \n"
-                            + "Cellular stage red: dies \n"
-                            + "Cellular stage blue: born");
-        leggenda.setEditable(false);
+        leggenda = new JLabel("<html>Cellular stage white: disabled <br>" +
+                                "Cellular stage black: enabled <br>" +
+                                "Cellular stage red: dies <br>" +
+                                "Cellular stage blue: born</html>");
+        title = new JLabel("SOPRAVVIVENZA CELLULARE");
+//        leggenda.setEditable(false);
         
         start = new JButton("Start");
         stop = new JButton("Stop");
@@ -54,29 +60,37 @@ public class Pannello extends JFrame implements ActionListener {
         
         legendAndButtons = new JPanel();
         legendAndButtons.setLayout(null);
-        legendAndButtons.setBounds(0,0, 250, 940);
+        legendAndButtons.setBounds(0,0, 375, 940);
         
-        leggenda.setBounds(0, 300, 250, 100);
-        leggenda.setOpaque(false);
-        leggenda.setFont(font);
+        title.setBounds(0,20,375,30);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setFont(fontTitolo);
+        legendAndButtons.add(title);
+        
+        leggenda.setBounds(75, 62, 225, 100);
+        leggenda.setOpaque(true);
+//        leggenda.setBackground();
+        leggenda.setFont(fontLeggenda);
+        leggenda.setHorizontalAlignment(SwingConstants.CENTER);
+        leggenda.setVerticalAlignment(SwingConstants.CENTER);
         legendAndButtons.add(leggenda);
         
-        start.setBounds(75, 10, 100, 30);
+        start.setBounds(75, 185, 225, 30);
         legendAndButtons.add(start);
         
-        stop.setBounds(75, 70, 100, 30);
+        stop.setBounds(75, 245, 225, 30);
         legendAndButtons.add(stop);
         
-        reset.setBounds(75, 130, 100, 30);
+        reset.setBounds(75, 305, 225, 30);
         legendAndButtons.add(reset);
         
-        close.setBounds(75, 190, 100, 30);
+        close.setBounds(75, 365, 225, 30);
         legendAndButtons.add(close);
         
         
         game = new JPanel();
         game.setLayout(new GridLayout(50,50));
-        game.setBounds(250, 0, 900, 900);
+        game.setBounds(375, 0, 900, 900);
         
         
         add(legendAndButtons);
@@ -103,9 +117,6 @@ public class Pannello extends JFrame implements ActionListener {
                 cellularStage2[i][j] = 0;
             }
         }
-        
-        
-        
         
         setResizable(false);
         setLocationRelativeTo(null);
@@ -144,7 +155,7 @@ public class Pannello extends JFrame implements ActionListener {
                         bottoni[50 * i + j].setBackground(Color.BLUE);
                     }
                     bottoni[50 * i + j].setBorder(defaultBorder);
-                    cellularStage2[i][j] = 0;
+                    
                 }
             }
             timer.stop();
@@ -154,17 +165,28 @@ public class Pannello extends JFrame implements ActionListener {
         //Set colors of the cells for state 1
         if (e.getSource() == timer2) {
             for (int i = 0; i < nBottoni; i++) {
-                if (bottoni[i].getBackground() == Color.RED) {
+                if(cellularStage2[i/50][i%50] == -1){
                     bottoni[i].setBackground(Color.WHITE);
-                } else if (bottoni[i].getBackground() == Color.BLUE) {
-                    bottoni[i].setBackground(Color.BLACK);
+                    cellularStage2[i/50][i%50] = 0;
                 }
+                else if (cellularStage2[i/50][i%50] == 2){
+                    bottoni[i].setBackground(Color.BLACK);
+                    cellularStage2[i/50][i%50] = 1;
+                }
+
+//
+//                if (bottoni[i].getBackground() == Color.RED) {
+//                    bottoni[i].setBackground(Color.WHITE);
+//                } else if (bottoni[i].getBackground() == Color.BLUE) {
+//                    bottoni[i].setBackground(Color.BLACK);
+//                }
                 
                 if (bottoni[i].getBackground() == Color.BLACK) {
                     cellularStage1[i / 50][i % 50] = 1;
                 } else {
                     cellularStage1[i / 50][i % 50] = 0;
                 }
+                cellularStage2[i/50][i%50] = 0;
             }
             timer.start();
             timer2.stop();
@@ -186,6 +208,7 @@ public class Pannello extends JFrame implements ActionListener {
                     cellularStage1[i][j] = 0;
                     cellularStage2[i][j] = 0;
                     bottoni[i*50+j].setBackground(Color.WHITE);
+                    bottoni[i*50+j].setBorder(defaultBorder);
                 }
             }
             timer.stop();
